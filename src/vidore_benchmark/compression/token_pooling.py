@@ -3,6 +3,7 @@ from typing import Dict, Tuple
 
 import torch
 from scipy.cluster.hierarchy import fcluster, linkage
+
 from vidore_benchmark.utils.torch_utils import get_torch_device
 
 
@@ -12,7 +13,7 @@ class BaseEmbeddingPooler(ABC):
     """
 
     @abstractmethod
-    def pool_embeddings(self, p_embeddings: torch.Tensor) -> Tuple[torch.Tensor, Dict[int, torch.Tensor]]:
+    def pool_embeddings(self, embeddings: torch.Tensor) -> Tuple[torch.Tensor, Dict[int, torch.Tensor]]:
         """
         Return the pooled embeddings and the mapping from cluster id to token indices.
         """
@@ -28,7 +29,7 @@ class HierarchicalEmbeddingPooler(BaseEmbeddingPooler):
         self.pool_factor = pool_factor
         self.device = get_torch_device(device)
 
-    def pool_embeddings(self, p_embeddings: torch.Tensor) -> Tuple[torch.Tensor, Dict[int, torch.Tensor]]:
+    def pool_embeddings(self, embeddings: torch.Tensor) -> Tuple[torch.Tensor, Dict[int, torch.Tensor]]:
         """
         Return the pooled embeddings and the mapping from cluster id to token indices.
 
@@ -41,14 +42,14 @@ class HierarchicalEmbeddingPooler(BaseEmbeddingPooler):
         - the sequence lengths can be different.
         - scipy doesn't support batched inputs.
         """
-        p_embeddings = p_embeddings.to(self.device)
+        embeddings = embeddings.to(self.device)
         pooled_embeddings = []
-        token_length = p_embeddings.size(0)
+        token_length = embeddings.size(0)
 
         if token_length == 1:
             raise ValueError("The input tensor must have more than one token.")
 
-        similarities = torch.mm(p_embeddings, p_embeddings.t()).to(torch.float32)
+        similarities = torch.mm(embeddings, embeddings.t()).to(torch.float32)
         similarities = 1 - similarities.cpu().numpy()
 
         Z = linkage(similarities, metric="euclidean", method="ward")  # noqa: N806
@@ -61,7 +62,7 @@ class HierarchicalEmbeddingPooler(BaseEmbeddingPooler):
             cluster_indices = torch.where(torch.tensor(cluster_labels == cluster_id, device=self.device))[0]
             cluster_id_to_indices[cluster_id] = cluster_indices
             if cluster_indices.numel() > 0:
-                pooled_embedding = p_embeddings[cluster_indices].mean(dim=0)
+                pooled_embedding = embeddings[cluster_indices].mean(dim=0)
                 pooled_embeddings.append(pooled_embedding)
 
         pooled_embeddings = torch.stack(pooled_embeddings, dim=0)
