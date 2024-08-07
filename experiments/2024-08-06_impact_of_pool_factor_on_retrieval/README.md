@@ -44,11 +44,8 @@ python experiments/2024-08-06_impact_of_pool_factor_on_retrieval/main.py \
     --pool-factors 5 \
     --pool-factors 6 \
     --pool-factors 7 \
-    --dataset-name vidore/docvqa_test_subsampled \
-    --split test
-
-python experiments/2024-08-06_impact_of_pool_factor_on_retrieval/main.py \
-    --model-name vidore/colpali \
+    --pool-factors 8 \
+    --pool-factors 9 \
     --pool-factors 10 \
     --pool-factors 20 \
     --pool-factors 30 \
