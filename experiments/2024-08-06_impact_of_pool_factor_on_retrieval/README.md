@@ -66,6 +66,23 @@ python experiments/2024-08-06_impact_of_pool_factor_on_retrieval/main.py \
     --pool-factors 10 \
     --pool-factors 20 \
     --pool-factors 30 \
+    --dataset-name vidore/syntheticDocQA_energy_test \
+    --split test
+
+python experiments/2024-08-06_impact_of_pool_factor_on_retrieval/main.py \
+    --model-name vidore/colpali \
+    --pool-factors 1 \
+    --pool-factors 2 \
+    --pool-factors 3 \
+    --pool-factors 4 \
+    --pool-factors 5 \
+    --pool-factors 6 \
+    --pool-factors 7 \
+    --pool-factors 8 \
+    --pool-factors 9 \
+    --pool-factors 10 \
+    --pool-factors 20 \
+    --pool-factors 30 \
     --dataset-name vidore/shiftproject_test \
     --split test
 ```
