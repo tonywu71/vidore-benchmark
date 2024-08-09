@@ -60,4 +60,4 @@ class EmbeddingBinarizer(BaseEmbeddingQuantizer):
             emb_padded.to(torch.float16).reshape(batch_size, -1), precision="binary"
         ).reshape(batch_size, *intermediate_dims, packed_dim)
 
-        return torch.Tensor(emb_binarized, device=embeddings.device)
+        return torch.tensor(emb_binarized, device=embeddings.device, dtype=torch.int8)
